@@ -1,0 +1,83 @@
+---
+title: "Day 8 - Session 1"
+format: html
+editor: visual
+execute: 
+  warning: false
+---
+
+## Recap Basics - ggplot
+
+```{r}
+library(tidyverse)
+library(here)
+library(janitor)
+library(patchwork)
+library(ggrepel)
+library(gghighlight)
+library(paletteer)
+library(ggExtra)
+library(ggbeeswarm)
+```
+
+read in lizards data
+
+```{r}
+
+lizards <- read_csv(here("data_tidy", "lizards.csv"))
+```
+
+## Data Wrangling Practice
+
+Do some data wrangling to create a new subset of lizards where u limit the data to
+
+1.  contain western whiptails, colorado checkered, and eastern fence lizards
+
+2.  Add a new column to convert the length to cm
+
+3.  group. by species and site
+
+4.  return a summary table with mean total length and standard dev of total length by speices and site
+
+```{r}
+lizards_subset <- lizards %>% 
+  filter(common_name %in% c("western whiptail", "colorado checkered", "eastern fence")) %>%   mutate(total_length_cm = total_length/10) %>% 
+  group_by(common_name, site) %>% 
+  summarize(mean_length = mean(total_length),
+            sd_length = sd(total_length))
+```
+
+## Data Vis
+
+make a scatterplot of lizard length vs weight
+
+```{r}
+ggplot(lizards, aes(x = total_length, y= weight))+
+  geom_point(aes(color = weight), size = 2)+
+  scale_y_continuous(limits = c(0,100),
+                     breaks = c(seq(from = 10, to = 100, by = 10)),
+                     expand = c(0,0))+
+  scale_color_gradientn(colors = c("pink","orange","yellow"))
+  # scale_color_gradient(low = "pink", high = "yellow")
+# +facet_wrap("site") 
+# Could add scales = free inside the facet wrap to alter scales
+```
+
+Use dplyer::count to find the total number of lizards by common name in the dataset
+
+```{r}
+lizards_count <- lizards %>% 
+  count(common_name)
+
+ggplot(lizards_count, aes(y = fct_reorder(common_name, n), x = n))+
+  geom_col(aes(fill = common_name) )
+  
+```
+
+fct_reorder: sets the first value as a factor and the second argument gives it the data to decide what order it should be in
+
+## Scales
+
+```{r}
+
+```
