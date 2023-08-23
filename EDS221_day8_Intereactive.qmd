@@ -18,6 +18,8 @@ library(gghighlight)
 library(paletteer)
 library(ggExtra)
 library(ggbeeswarm)
+library(gapminder)
+library(sf)
 ```
 
 read in lizards data
@@ -76,8 +78,34 @@ ggplot(lizards_count, aes(y = fct_reorder(common_name, n), x = n))+
 
 fct_reorder: sets the first value as a factor and the second argument gives it the data to decide what order it should be in
 
-## Scales
+## GGplot from gapminder data
 
 ```{r}
+ggplot(data = gapminder, aes(x = lifeExp, y= gdpPercap))+
+  geom_point()+
+  annotate("text", x = 40, y = 90000, label = "A LABEL!")+
+  geom_hline(yintercept = 70000, linetype = "dotted", color = "purple")+
+  geom_vline(xintercept = mean(gapminder$lifeExp), linetype = "dashed", color = "green")
+```
 
+```{r}
+gapminder %>% 
+  filter(year == 2002 & continent == "Europe") %>% 
+  ggplot(aes(x = gdpPercap, y = lifeExp))+
+  geom_point()+
+  # geom_text_repel(aes(label = country))+
+  gghighlight(country == "Poland", label_key = country)
+
+# inside geom point: shape = 23, size = 4, color = "red", fill = "pink"
+```
+
+Create a GGplot chart using only data from 2007, then highlight all countries in Europe, adding their country name as the label
+
+```{r}
+gapminder %>% 
+  filter(year == 2007) %>% 
+  ggplot(aes(x = gdpPercap, y = lifeExp))+
+  geom_point()+
+  geom_text_repel(aes(label = country))+
+  gghighlight(continent == "Europe")
 ```
